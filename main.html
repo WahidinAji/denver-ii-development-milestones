@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Milestone Compass</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo">DII</div>
+        <div>
+          <h1 data-i18n="app_title">Milestone Compass</h1>
+          <p data-i18n="app_tagline">Track Denver II style milestones with clear next steps and shareable progress.</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="exportSummaryBtn" class="ghost" data-i18n="action_export_summary">Export summary</button>
+        <button id="exportLogBtn" class="primary" data-i18n="action_export_log">Export log CSV</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel profile" style="--delay: 0s">
+      <h2 data-i18n="section_child_profile">Child profile</h2>
+      <div class="form-grid">
+        <div class="full">
+          <label for="childName" data-i18n="label_child_name">Child name</label>
+          <input id="childName" placeholder="e.g. Aidan" data-i18n-placeholder="placeholder_child_name" />
+        </div>
+        <div>
+          <label for="birthDate" data-i18n="label_birth_date">Birth date</label>
+          <input id="birthDate" type="date" />
+        </div>
+        <div>
+          <label for="assessmentDate" data-i18n="label_assessment_date">Assessment date</label>
+          <input id="assessmentDate" type="date" />
+        </div>
+        <div class="full">
+          <label for="manualAgeMonths" data-i18n="label_manual_age">Or enter age in months</label>
+          <input id="manualAgeMonths" type="number" min="0" step="0.1" placeholder="Overrides computed age" data-i18n-placeholder="placeholder_manual_age" />
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label" data-i18n="metric_age_months">Age in months</div>
+          <div class="metric-value" id="ageMonths">--</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label" data-i18n="metric_age_days">Age in days</div>
+          <div class="metric-value" id="ageDays">--</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label" data-i18n="metric_logged">Logged milestones</div>
+          <div class="metric-value" id="totalEntries">0</div>
+        </div>
+      </div>
+
+      <div class="helper" data-i18n="helper_storage">
+        Data saves locally in this browser. Use the export buttons to share progress with a doctor or caregiver.
+      </div>
+    </section>
+
+    <section class="panel log-form" style="--delay: 0.05s">
+      <h2 data-i18n="section_log_milestone">Log a milestone</h2>
+      <div class="form-grid">
+        <div>
+          <label for="entryDomain" data-i18n="label_domain">Domain</label>
+          <select id="entryDomain"></select>
+        </div>
+        <div>
+          <label for="entryMilestone" data-i18n="label_milestone">Milestone</label>
+          <select id="entryMilestone"></select>
+        </div>
+        <div class="full hidden" id="manualMilestoneWrap">
+          <label for="entryManualMilestone" data-i18n="label_manual_milestone">Manual milestone title</label>
+          <input id="entryManualMilestone" placeholder="Type a custom milestone" data-i18n-placeholder="placeholder_manual_milestone" />
+        </div>
+        <div>
+          <label for="entryDate" data-i18n="label_date_observed">Date observed</label>
+          <input id="entryDate" type="date" />
+        </div>
+        <div>
+          <label for="entryStatus" data-i18n="label_status">Status</label>
+          <select id="entryStatus">
+            <option value="achieved" data-i18n="status_achieved">Achieved</option>
+            <option value="emerging" data-i18n="status_emerging">Emerging</option>
+            <option value="not_yet" data-i18n="status_not_yet">Not yet</option>
+          </select>
+        </div>
+        <div>
+          <label for="entryObserver" data-i18n="label_observed_by">Observed by</label>
+          <input id="entryObserver" placeholder="Parent, caregiver, doctor" data-i18n-placeholder="placeholder_observed_by" />
+        </div>
+        <div>
+          <label for="entryNotes" data-i18n="label_notes">Notes</label>
+          <textarea id="entryNotes" placeholder="Context, examples, or cues" data-i18n-placeholder="placeholder_notes"></textarea>
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="saveEntryBtn" class="primary" data-i18n="button_save_entry">Save entry</button>
+        <button id="updateEntryBtn" disabled data-i18n="button_update_entry">Update entry</button>
+        <button id="clearEntryBtn" class="ghost" data-i18n="button_clear">Clear</button>
+      </div>
+      <div id="editNotice" class="edit-notice hidden">
+        <span data-i18n="edit_notice">Editing existing entry.</span>
+        <button id="cancelEditBtn" class="ghost" data-i18n="button_cancel_edit">Cancel edit</button>
+      </div>
+    </section>
+
+    <section class="panel summary" style="--delay: 0.1s">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="section_summary">Progress summary</h2>
+          <div class="panel-subtitle" id="summarySubtitle" data-i18n="summary_no_entries">No entries yet.</div>
+        </div>
+        <button id="clearLogBtn" class="warn" data-i18n="button_clear_log">Clear log</button>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-value" id="countAchieved">0</div>
+          <div class="summary-label" data-i18n="summary_achieved">Achieved</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="countEmerging">0</div>
+          <div class="summary-label" data-i18n="summary_emerging">Emerging</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="countNotYet">0</div>
+          <div class="summary-label" data-i18n="summary_not_yet">Not yet</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="countTotal">0</div>
+          <div class="summary-label" data-i18n="summary_total">Total logged</div>
+        </div>
+      </div>
+      <div class="button-row" style="margin-top: 14px;">
+        <span class="tag" data-i18n="label_language">Language</span>
+        <div class="lang-toggle" role="group" aria-label="Summary language" data-i18n-aria="label_language">
+          <button class="lang-btn" type="button" data-lang="id" aria-pressed="true">ID</button>
+          <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button id="copySummaryBtn" data-i18n="button_copy_summary">Copy summary</button>
+      </div>
+    </section>
+
+    <section class="panel catalog" style="--delay: 0.15s">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="section_catalog">Milestone catalog</h2>
+          <div class="panel-subtitle" id="catalogStatus">Loaded from data.csv</div>
+        </div>
+        <div class="panel-controls">
+          <button class="ghost collapse-toggle" data-collapse-target="catalogBody" aria-expanded="true" type="button">
+            Collapse
+          </button>
+        </div>
+      </div>
+      <div class="panel-body" id="catalogBody">
+        <div class="filters">
+          <input id="catalogSearch" placeholder="Search milestones" data-i18n-placeholder="placeholder_search_catalog" />
+          <select id="catalogDomainFilter"></select>
+          <select id="catalogAgeFilter">
+            <option value="all" data-i18n="filter_all_ages">All ages</option>
+            <option value="0-6" data-i18n="filter_age_0_6">0 to 6 months</option>
+            <option value="6-12" data-i18n="filter_age_6_12">6 to 12 months</option>
+            <option value="12-18" data-i18n="filter_age_12_18">12 to 18 months</option>
+            <option value="18-24" data-i18n="filter_age_18_24">18 to 24 months</option>
+            <option value="24-36" data-i18n="filter_age_24_36">24 to 36 months</option>
+          </select>
+        </div>
+        <div class="button-row" style="margin-top: 12px;">
+          <label class="tag" for="catalogImport" data-i18n="button_import_csv">Import CSV</label>
+          <input id="catalogImport" type="file" accept=".csv" class="hidden" />
+          <button id="catalogResetBtn" class="ghost" data-i18n="button_reset_catalog">Reset catalog</button>
+        </div>
+        <div class="catalog-list" id="catalogList"></div>
+        <div class="empty hidden" id="catalogEmpty" data-i18n="catalog_no_results">No milestones match the filters.</div>
+      </div>
+    </section>
+
+    <section class="panel upcoming" style="--delay: 0.2s">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="section_upcoming">What to expect next</h2>
+          <div class="panel-subtitle" data-i18n="upcoming_subtitle">Based on age and unfinished milestones.</div>
+        </div>
+        <div class="panel-controls">
+          <button class="ghost collapse-toggle" data-collapse-target="upcomingBody" aria-expanded="true" type="button">
+            Collapse
+          </button>
+        </div>
+      </div>
+      <div class="panel-body" id="upcomingBody">
+        <div class="upcoming-list" id="upcomingList"></div>
+        <div class="empty hidden" id="upcomingEmpty" data-i18n="upcoming_no_age">Enter an age to see upcoming milestones.</div>
+      </div>
+    </section>
+
+    <section class="panel log" style="--delay: 0.25s">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="section_log">Progress log</h2>
+          <div class="panel-subtitle" data-i18n="log_subtitle">Create, update, delete, and search entries.</div>
+        </div>
+        <div class="filters">
+          <input id="logSearch" placeholder="Search log" data-i18n-placeholder="placeholder_search_log" />
+          <select id="logDomainFilter"></select>
+          <select id="logStatusFilter">
+            <option value="all" data-i18n="filter_all_statuses">All statuses</option>
+            <option value="achieved" data-i18n="status_achieved">Achieved</option>
+            <option value="emerging" data-i18n="status_emerging">Emerging</option>
+            <option value="not_yet" data-i18n="status_not_yet">Not yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap" style="margin-top: 12px;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th data-i18n="table_milestone">Milestone</th>
+              <th data-i18n="table_domain">Domain</th>
+              <th data-i18n="table_status">Status</th>
+              <th data-i18n="table_date">Date</th>
+              <th data-i18n="table_age_months">Age (months)</th>
+              <th data-i18n="table_observer">Observer</th>
+              <th data-i18n="table_actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+        <div class="empty hidden" id="logEmpty" data-i18n="log_empty">No entries yet. Add one from the form or catalog.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-i18n="footer_note">
+    Denver II is a screening tool and not a diagnosis. Use this tracker for personal organization and consult trained professionals for official screening.
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
